@@ -42,6 +42,17 @@
             50% { opacity: 0; }
         }
 
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        @keyframes hitEffect {
+            0% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
         @keyframes screamReveal {
             0% { opacity: 0; transform: scale(0.5); }
             10% { opacity: 1; transform: scale(1.1); }
@@ -55,6 +66,11 @@
             100% { transform: translateY(100%); }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         body {
             background: #000;
             color: #00ff41;
@@ -66,6 +82,7 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
+            user-select: none;
         }
 
         body::before {
@@ -160,11 +177,6 @@
             margin-left: 5px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .glitch-text {
             animation: glitch 0.1s infinite;
             display: inline-block;
@@ -194,50 +206,109 @@
             padding-bottom: 10px;
         }
 
-        /* ===== ЛАБИРИНТ ===== */
-        .maze-container {
-            display: grid;
-            gap: 2px;
-            margin: 20px auto;
-            max-width: 400px;
-            width: fit-content;
+        /* ===== ОХОТА ===== */
+        .hunting-field {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            background: radial-gradient(ellipse at center, #0a1a0a 0%, #000 100%);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: crosshair;
+            margin: 10px 0;
         }
 
-        .maze-cell {
-            width: 35px;
-            height: 35px;
-            background: #0a1a0a;
-            border: 1px solid #00ff41;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .hunting-field .crosshair {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            font-size: 30px;
+            color: #00ff41;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .mutant {
+            position: absolute;
+            font-size: 48px;
+            cursor: crosshair;
+            animation: float 2s ease-in-out infinite;
+            transition: all 0.1s;
+            z-index: 10;
+            pointer-events: auto;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
             user-select: none;
         }
 
-        .maze-cell.wall {
-            background: #00ff41;
-            cursor: not-allowed;
+        .mutant:hover {
+            transform: scale(1.1);
+        }
+
+        .mutant.hit {
+            animation: hitEffect 0.3s forwards;
+            pointer-events: none;
+        }
+
+        .mutant .mutant-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #00ff41;
             opacity: 0.3;
+            white-space: nowrap;
+            letter-spacing: 1px;
         }
 
-        .maze-cell.path {
-            background: #0a1a0a;
+        .shot-effect {
+            position: absolute;
+            pointer-events: none;
+            z-index: 50;
+            color: #00ff41;
+            font-size: 40px;
+            opacity: 0;
+            transform: translate(-50%, -50%);
         }
 
-        .maze-cell.player {
-            background: #00ff41;
-            box-shadow: 0 0 20px #00ff41;
+        .shot-effect.active {
+            animation: hitEffect 0.2s forwards;
         }
 
-        .maze-cell.exit {
-            background: #00ff41;
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-header .stat {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .game-header .stat span {
+            font-weight: bold;
+            font-size: 20px;
+            opacity: 1;
+        }
+
+        .game-header .stat .value {
+            color: #00ff41;
+        }
+
+        .game-header .stat .value.danger {
+            color: #ff0040;
             animation: blink 0.5s infinite;
         }
 
-        /* Судоку */
+        /* ===== СУДОКУ ===== */
         .sudoku-wrapper {
             display: flex;
             gap: 30px;
@@ -444,6 +515,7 @@
             opacity: 1;
         }
 
+        /* ===== КНОПКИ ===== */
         .btn {
             background: transparent;
             color: #00ff41;
@@ -530,32 +602,6 @@
             color: #ff6600;
             border-color: #ff6600;
             background: rgba(255, 102, 0, 0.1);
-        }
-
-        .reward {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            border: 2px solid #00ff41;
-            border-radius: 4px;
-            background: rgba(0, 255, 65, 0.05);
-        }
-
-        .reward.show {
-            display: block;
-        }
-
-        .reward img {
-            max-width: 100%;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-
-        .reward-text {
-            color: #00ff41;
-            font-size: 16px;
-            line-height: 1.8;
-            white-space: pre-wrap;
         }
 
         .progress {
@@ -720,6 +766,182 @@
             animation: codeRain linear infinite;
         }
 
+        /* ===== ДИАЛОГ (ФИНАЛЬНАЯ НАГРАДА) ===== */
+        .dialog-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .dialog-screen.active {
+            display: block;
+        }
+
+        .dialog-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            min-height: 400px;
+        }
+
+        .portrait-container {
+            flex: 0 0 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #00ff41;
+            padding: 15px 10px 10px 10px;
+            background: rgba(0, 255, 65, 0.02);
+            border-radius: 4px;
+        }
+
+        .portrait-frame {
+            width: 100%;
+            max-width: 250px;
+            aspect-ratio: 1 / 1;
+            background: #000;
+            border: 2px solid #00ff41;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.05);
+        }
+
+        .portrait-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .portrait-frame .scanline-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 3px);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .portrait-frame .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.6) 100%);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .portrait-name {
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #00ff41;
+            opacity: 0.7;
+            text-align: center;
+            line-height: 1.6;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            padding-top: 8px;
+            width: 100%;
+        }
+
+        .portrait-name .highlight {
+            color: #00ff41;
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .text-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-width: 250px;
+        }
+
+        .dialog-text {
+            background: rgba(0, 255, 65, 0.02);
+            border: 1px solid #00ff41;
+            padding: 25px 30px;
+            min-height: 260px;
+            max-height: 400px;
+            overflow-y: auto;
+            position: relative;
+            line-height: 2.0;
+            font-size: 26px;
+            color: #00ff41;
+            letter-spacing: 1px;
+            border-radius: 2px;
+        }
+
+        .dialog-text .text-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .dialog-text .text-content .char {
+            opacity: 0;
+            animation: fadeIn 0.05s forwards;
+        }
+
+        .dialog-text .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 15px;
+            background: #00ff41;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        .dialog-text .cursor-blink.hidden {
+            display: none;
+        }
+
+        .page-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .page-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #0a1a0a;
+            border: 1px solid #00ff41;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .page-dot.active {
+            background: #00ff41;
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .page-dot.done {
+            background: #00ff41;
+            opacity: 0.5;
+        }
+
+        .dialog-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
         @media (max-width: 768px) {
             .monitor {
                 padding: 15px;
@@ -759,25 +981,65 @@
                 height: 80px;
                 gap: 4px;
             }
-            .maze-cell {
-                width: 28px;
-                height: 28px;
+            .hunting-field {
+                height: 300px;
+            }
+            .mutant {
+                font-size: 36px;
+            }
+            .dialog-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .portrait-container {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 280px;
+            }
+            .portrait-frame {
+                max-width: 180px;
+            }
+            .dialog-text {
+                font-size: 20px;
+                padding: 20px;
+                min-height: 200px;
+                max-height: 300px;
+            }
+            .btn {
+                padding: 10px 24px;
+                font-size: 14px;
+            }
+            .game-header .stat {
                 font-size: 12px;
             }
-            .maze-container {
-                max-width: 300px;
+            .game-header .stat span {
+                font-size: 16px;
             }
         }
 
         @media (max-width: 480px) {
-            .maze-cell {
-                width: 22px;
-                height: 22px;
-                font-size: 10px;
+            .hunting-field {
+                height: 250px;
             }
-            .maze-container {
-                max-width: 220px;
-                gap: 1px;
+            .mutant {
+                font-size: 28px;
+            }
+            .portrait-frame {
+                max-width: 140px;
+            }
+            .dialog-text {
+                font-size: 17px;
+                padding: 15px;
+                min-height: 160px;
+                max-height: 250px;
+            }
+            .btn {
+                padding: 8px 18px;
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+            .portrait-name {
+                font-size: 12px;
             }
         }
     </style>
@@ -801,9 +1063,25 @@
         // ===== НАСТРОЙКИ КВЕСТА =====
         // ========================================
         const CONFIG = {
-            MAX_ATTEMPTS: 3,
-            MAZE_SIZE: 7,
-            
+            MAX_ATTEMPTS: 5,
+
+            // Настройки охоты
+            GAME_DURATION: 30,
+            TARGET_KILLS: 10,
+            MUTANT_SPAWN_INTERVAL: 800,
+            MAX_MUTANTS: 6,
+            MUTANTS: [
+                { emoji: '👾', name: 'Псевдогигант' },
+                { emoji: '🧛', name: 'Кровосос' },
+                { emoji: '🕵️', name: 'Бюрер' },
+                { emoji: '🐷', name: 'Плоть' },
+                { emoji: '🐗', name: 'Кабан-мутант' },
+                { emoji: '🕷️', name: 'Паук-мутант' },
+                { emoji: '🐺', name: 'Псевдоволк' },
+                { emoji: '🧟', name: 'Зомбированный' }
+            ],
+
+            // Судоку
             SUDOKU_PUZZLE: [
                 [5, 3, 0, 0, 7, 0, 0, 0, 0],
                 [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -826,59 +1104,254 @@
                 [2, 8, 7, 4, 1, 9, 6, 3, 5],
                 [3, 4, 5, 2, 8, 6, 1, 7, 9]
             ],
-            
+
             SUDOKU_SKIP_PASSWORD: "1986",
             SIMON_LEVELS: [3, 4, 5, 6, 7],
-            
-            FINAL_QUESTIONS: [
-                {
-                    question: "Так что было во-первых?",
-                    answer: "MARZIPAN",
-                    placeholder: "Введите ответ..."
-                },
-                {
-                    question: "И что, значит, я ему говорю?",
-                    answer: "KAGOR",
-                    placeholder: "Введите ответ..."
-                },
-                {
-                    question: "Как его звали-то?",
-                    answer: "Юрий Анатольевич",
-                    placeholder: "Введите ответ..."
-                }
-            ],
-            
+
+            // Финальные вопросы
+            FINAL_QUESTIONS: [{
+                question: "Так что было во-первых?",
+                answer: "MARZIPAN",
+                placeholder: "Введите ответ..."
+            }, {
+                question: "И что, значит, я ему говорю?",
+                answer: "KAGOR",
+                placeholder: "Введите ответ..."
+            }, {
+                question: "Как его звали-то?",
+                answer: "Юрий Анатольевич",
+                placeholder: "Введите ответ..."
+            }],
+
             STUPID_QUESTIONS: [
                 "С какой целью прибыла наша оперативная группа?",
                 "Сколько нужно варить пельмени?",
                 "С какой скоростью бегает кровосос?"
-            ],
-            
-            REWARD_IMAGES: [
-                'https://via.placeholder.com/800x400/0a1a0a/00ff41?text=ЗОНА+ОТЧУЖДЕНИЯ',
-                'https://via.placeholder.com/800x400/0a1a0a/00ff41?text=АРТЕФАКТЫ'
-            ],
-            REWARD_TEXT: `
-╔═══════════════════════════════════════════╗
-║                                           ║
-║         ДОСТУП ПРЕДОСТАВЛЕН               ║
-║                                           ║
-╚═══════════════════════════════════════════╝
-
-Зона отчуждения хранит множество тайн. 
-Артефакты, аномалии, мутанты - это лишь вершина айсберга.
-
-Ты доказал, что достоин знать правду.
-
-Помни: Зона не прощает ошибок.
-Но она вознаграждает смелых.
-
-"Зона - это не место. Это состояние души."
-- Неизвестный сталкер
-
-═══════════════════════════════════════════
-            `
+            ]
         };
+
+        // ========================================
+        // ===== ДАННЫЕ ДЛЯ ФИНАЛЬНОГО ДИАЛОГА =====
+        // ========================================
+        const DIALOG_PAGES = [{
+            id: 0,
+            text: `Я ушёл от группы Шаповаленко, когда начался выброс. Долгая возня с бандитами — верный путь к безумию. Зря я тогда дезертировал из бункера. Сидел бы сейчас в своей каморке, работал с артефактами. Но вся стратегия пошла прахом. Если меня прижмут сталкеры или МАСС ЧАЗ — у меня есть страховка.`
+        }, {
+            id: 1,
+            text: `Тот, кто читает это, знай: я — Юрий Анатольевич, бывший сотрудник НИИ ЧАЗ, работал в северном бункере учёных, ещё до того, как на «Яму Лазаря» сбросили «смерть лампы». Дезертировал, когда информационная чума погнала нас с севера.`
+        }, {
+            id: 2,
+            text: `Я начал сотрудничать с группой мародёров Шаповаленко. Они прикрывались липовыми ксивами и выдавали себя за научно-оперативную группу, рассчитывая, что связи с большой земли нет. Они обходили МАСС ЧАЗ и МСОП, пока набирали силы, пользуясь тем, что приказы поздно доходят. Когда официалы чертыхались из-за отсутствия информации о подкреплении, эти мародёры включали бычку — мол, только что с той стороны периметра, так что придержите коней. А потом крошили всех и забирали добро. Сталкеров начали прессовать, когда переоделись в камуфляж официалов. Сейчас они пытаются уйти из Зоны через катакомбы, оставшиеся ещё со времён холодной войны — верят, что это сработает.`
+        }, {
+            id: 3,
+            text: `Я успел забрать документы МСОПа, где действительно упоминались катакомбы — возможно, путепроводы, ведущие через центр Зоны за периметр. По моей гипотезе, чума смещается на юг, и на севере её концентрация снизилась. Может, идея и рабочая, но пока это лишь демагогия.`
+        }, {
+            id: 4,
+            text: `В группе Шаповаленко убили двоих моих подчинённых, в их комбинезоны переоделись двое других мародёров. Один из них — Маяк. А один из убитых был румыном, а занявший его место бандит тоже румын. Подобная тавтология мне простительна, ибо читающий этот текст вряд ли имеет 11 классов образования, чего уж говорить про вышку.`
+        }, {
+            id: 5,
+            text: `Шаповаленко хотел очистить своё имя и использовать мои документы с редкими артефактами, чтобы заморочить голову МАСС ЧАЗу. Узнав о таком повороте, я пошёл на сделку с румынами. Они перехватили конвой Хлебникова, перебили охрану и захватили его КПК, который хранился у заместителя. Самого Хлебникова давно убили свободовцы. Внимательный читатель мог заметить, что хронология событий смещена. Всё так. Мои документы и артефакты лежали на севере, а конвоиры нашли их и не сумев слить добро барыгам, вышли на Шаповаленко. Мир тесен, конечно.`
+        }, {
+            id: 6,
+            text: `Но румыны решили меня обмануть — ожидаемо. Они наняли шпану: «левые типы», что вечно торчали на баре и промышляли на диких территориях. Эти бродили по лесам, искали сталкерские схроны, следили за матёрыми бродягами в надежде их ограбить.`
+        }, {
+            id: 7,
+            text: `Всё завертелось, когда на наш след вышла так называемая "чёрная гвардия". Когда они взлезли в наши дела, началась анархия. Появились утечки неизвестной мне информации об агентурной деятельности сталкеров. Я могу понять мотивацию румынов, и они, как мне кажется, ответственны за вброс данных. Казаков и сталкеров требовалось стравить друг с другом, но румыны не ожидали, что братки окажутся честнее всей прошлой грязи ногтевой, которая жила на депо и отравляла жизнь сталкерам.`
+        }, {
+            id: 8,
+            text: `Казаки начали поднимать свой авторитет среди сталкеров и выступили такими себе судьями, работая по делу с агентами. У румынов-то был расчёт, что они переубивают друг друга в пылу крамолы и подозрений, а оно вон как. Если братки доберутся до артефактов — по жадности просто сольют их. Эти аномальные образования имеют катастрофическую ценность. Об их свойствах я писать не буду — оставлю память о них и о документах в своей голове как страховку, чтобы не убили.`
+        }, {
+            id: 9,
+            text: `Я и мои знания — единственный шанс совершить скачок к освобождению из этого проклятого места, что заняло место Зоны. Пусть теперь мою судьбу решают те, кто придут за мной. Мое кустарное убежище расположено на МЗ "Динамо".`
+        }];
+
+        // ========================================
+        // ===== ЗВУК (ДЛЯ ДИАЛОГА) =====
+        // ========================================
+        class SpeechSound {
+            constructor() {
+                this.enabled = true;
+            }
+
+            playSpeech() {
+                const audio = new Audio('asriel.mp3');
+    audio.play();
+            }
+
+            playEnd() {}
+        }
+
+        // ========================================
+        // ===== ЗВУКИ ДЛЯ ОХОТЫ =====
+        // ========================================
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                try {
+                    this.ctx = new(window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    this.enabled = false;
+                }
+            }
+
+            resume() {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playShoot() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    this.resume();
+                    const now = this.ctx.currentTime;
+
+                    const bufferSize = this.ctx.sampleRate * 0.05;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                    }
+
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+                    noise.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.05);
+
+                    const osc = this.ctx.createOscillator();
+                    const oscGain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.04);
+                    oscGain.gain.setValueAtTime(0.15, now);
+                    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.connect(oscGain);
+                    oscGain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+
+                    const osc2 = this.ctx.createOscillator();
+                    const osc2Gain = this.ctx.createGain();
+                    osc2.type = 'sawtooth';
+                    osc2.frequency.setValueAtTime(2000, now);
+                    osc2.frequency.exponentialRampToValueAtTime(300, now + 0.03);
+                    osc2Gain.gain.setValueAtTime(0.05, now);
+                    osc2Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                    osc2.connect(osc2Gain);
+                    osc2Gain.connect(this.ctx.destination);
+                    osc2.start(now);
+                    osc2.stop(now + 0.03);
+
+                } catch (e) {}
+            }
+
+            playHit() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    this.resume();
+                    const now = this.ctx.currentTime;
+
+                    const bufferSize = this.ctx.sampleRate * 0.08;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.5)) * 0.7;
+                    }
+
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                    noise.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.08);
+
+                    const osc = this.ctx.createOscillator();
+                    const oscGain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(80, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.06);
+                    oscGain.gain.setValueAtTime(0.2, now);
+                    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(oscGain);
+                    oscGain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+
+                } catch (e) {}
+            }
+
+            playMiss() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    this.resume();
+                    const now = this.ctx.currentTime;
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.06);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+
+                } catch (e) {}
+            }
+
+            playGameOver(win) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    this.resume();
+                    const now = this.ctx.currentTime;
+
+                    if (win) {
+                        const notes = [523, 587, 659, 784, 880];
+                        notes.forEach((freq, i) => {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = 'square';
+                            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                            gain.gain.setValueAtTime(0.06, now + i * 0.1);
+                            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.15);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start(now + i * 0.1);
+                            osc.stop(now + i * 0.1 + 0.15);
+                        });
+                    } else {
+                        const notes = [440, 370, 330, 294];
+                        notes.forEach((freq, i) => {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = 'sawtooth';
+                            osc.frequency.setValueAtTime(freq, now + i * 0.15);
+                            gain.gain.setValueAtTime(0.04, now + i * 0.15);
+                            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.2);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start(now + i * 0.15);
+                            osc.stop(now + i * 0.15 + 0.2);
+                        });
+                    }
+                } catch (e) {}
+            }
+        }
 
         // ========================================
         // ===== СОСТОЯНИЕ ИГРЫ =====
@@ -889,8 +1362,6 @@
             gameOver: false,
             gameWon: false,
             currentGame: 0,
-            mazePlayer: { x: 0, y: 0 },
-            mazeExit: { x: 6, y: 6 },
             sudokuGrid: [],
             sudokuSkipped: false,
             stupidIndex: 0,
@@ -903,44 +1374,328 @@
                 sequence: [],
                 playerSequence: [],
                 isComplete: false
+            },
+            hunt: {
+                score: 0,
+                timeLeft: CONFIG.GAME_DURATION,
+                isPlaying: false,
+                isGameOver: false,
+                isWin: false,
+                mutants: [],
+                spawnInterval: null,
+                timerInterval: null
             }
         };
 
-        // ========================================
-        // ===== ОСНОВНЫЕ ФУНКЦИИ =====
-        // ========================================
+        let simonState = {};
+        let dialogState = {
+            currentPage: 0,
+            isTyping: false,
+            typeTimeout: null,
+            isSkipped: false
+        };
 
-        function init() {
-            const saved = localStorage.getItem('stalkerQuestState');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    state = { ...state, ...parsed };
-                    if (state.gameWon) {
-                        showReward();
-                        return;
-                    }
-                    if (state.gameOver) {
-                        showGameOver();
-                        return;
-                    }
-                } catch (e) {}
-            }
+        const sound = new SoundEngine();
+        const speech = new SpeechSound();
 
-            state.sudokuGrid = CONFIG.SUDOKU_PUZZLE.map(row => [...row]);
-            state.simon = {
-                level: 0,
-                sequence: [],
-                playerSequence: [],
-                isComplete: false
-            };
-            // Убеждаемся, что игрок в правильной позиции
-            state.mazePlayer = { x: 0, y: 0 };
-            bootSequence();
-        }
+        // ========================================
+        // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+        // ========================================
 
         function saveState() {
             localStorage.setItem('stalkerQuestState', JSON.stringify(state));
+        }
+
+        function createBtn(text, onClick) {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = text;
+            btn.addEventListener('click', onClick);
+            return btn;
+        }
+
+        function showMessage(text, type) {
+            const content = document.getElementById('screenContent');
+            let msgDiv = content.querySelector('.message:not(.game-title)');
+            if (!msgDiv) {
+                msgDiv = document.createElement('div');
+                msgDiv.className = 'message';
+                content.appendChild(msgDiv);
+            }
+            msgDiv.textContent = text;
+            msgDiv.className = 'message ' + type;
+        }
+
+        function updateAttempts() {
+            const attemptsDiv = document.querySelector('.attempt-counter');
+            if (attemptsDiv) {
+                attemptsDiv.innerHTML = `Попыток: <span>${state.attempts}</span> из ${CONFIG.MAX_ATTEMPTS}`;
+            }
+        }
+
+        function showScreamer() {
+            state.gameOver = true;
+            state.currentScreen = 'gameover';
+            saveState();
+
+            const overlay = document.getElementById('screamerOverlay');
+
+            const rainContainer = document.getElementById('codeRain');
+            rainContainer.innerHTML = '';
+
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?';
+            for (let i = 0; i < 50; i++) {
+                const span = document.createElement('span');
+                span.textContent = chars[Math.floor(Math.random() * chars.length)];
+                span.style.left = Math.random() * 100 + '%';
+                span.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                span.style.animationDelay = (Math.random() * 2) + 's';
+                span.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                span.style.opacity = Math.random() * 0.5 + 0.1;
+                rainContainer.appendChild(span);
+            }
+
+            overlay.classList.add('active');
+
+            try {
+                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 1);
+
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.type = 'square';
+                    osc2.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    osc2.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc2.start(audioCtx.currentTime);
+                    osc2.stop(audioCtx.currentTime + 0.5);
+                }, 100);
+            } catch (e) {}
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                showGameOver();
+            }, 4000);
+        }
+
+        function showGameOver() {
+            const content = document.getElementById('screenContent');
+            content.innerHTML = '';
+
+            const title = document.createElement('div');
+            title.className = 'game-title';
+            title.textContent = '══ ДОСТУП ЗАБЛОКИРОВАН ══';
+            title.style.color = '#ff6600';
+            title.style.borderColor = '#ff6600';
+            content.appendChild(title);
+
+            const msg = document.createElement('div');
+            msg.className = 'message gameover';
+            msg.textContent = '❌ Попытка взлома была пресечена. Ваше местоположение передано центру.';
+            content.appendChild(msg);
+
+        }
+
+        // ===== ФУНКЦИИ ДЛЯ ФИНАЛЬНОГО ДИАЛОГА =====
+        function initDialog() {
+            dialogState.currentPage = 0;
+            dialogState.isSkipped = false;
+            createIndicators();
+            showDialogPage(0);
+        }
+
+        function createIndicators() {
+            const container = document.getElementById('pageIndicator');
+            container.innerHTML = '';
+            const totalPages = DIALOG_PAGES.length;
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'page-dot';
+                dot.dataset.index = i;
+                container.appendChild(dot);
+            }
+            updateDialogIndicators();
+        }
+
+        function showDialogPage(index) {
+            const totalPages = DIALOG_PAGES.length;
+            if (index < 0 || index >= totalPages) return;
+
+            dialogState.currentPage = index;
+            updateDialogIndicators();
+
+            const content = document.getElementById('textContent');
+            content.innerHTML = '';
+            const cursor = document.getElementById('cursorBlink');
+            cursor.classList.remove('hidden');
+
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('prevBtn').disabled = true;
+
+            speech.playSpeech();
+
+            const fullText = DIALOG_PAGES[index].text;
+            typeDialogText(content, fullText, cursor);
+        }
+
+        function typeDialogText(container, text, cursor) {
+            dialogState.isTyping = true;
+            dialogState.isSkipped = false;
+            let charIndex = 0;
+            const chars = text.split('');
+
+            if (dialogState.typeTimeout) {
+                clearTimeout(dialogState.typeTimeout);
+                dialogState.typeTimeout = null;
+            }
+
+            function typeChar() {
+                if (dialogState.isSkipped) {
+                    container.innerHTML = '';
+                    const span = document.createElement('span');
+                    span.textContent = text;
+                    container.appendChild(span);
+                    cursor.classList.add('hidden');
+                    dialogState.isTyping = false;
+                    document.getElementById('nextBtn').disabled = false;
+                    document.getElementById('prevBtn').disabled = false;
+                    return;
+                }
+
+                if (charIndex >= chars.length) {
+                    cursor.classList.add('hidden');
+                    dialogState.isTyping = false;
+                    document.getElementById('nextBtn').disabled = false;
+                    document.getElementById('prevBtn').disabled = false;
+                    return;
+                }
+
+                const char = chars[charIndex];
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char;
+                container.appendChild(span);
+
+                charIndex++;
+                const delay = 15 + Math.random() * 25;
+                dialogState.typeTimeout = setTimeout(typeChar, delay);
+            }
+
+            typeChar();
+        }
+
+        function skipDialogTyping() {
+            if (dialogState.isTyping) {
+                dialogState.isSkipped = true;
+                if (dialogState.typeTimeout) {
+                    clearTimeout(dialogState.typeTimeout);
+                    dialogState.typeTimeout = null;
+                }
+            }
+        }
+
+        function nextDialogPage() {
+            const totalPages = DIALOG_PAGES.length;
+            if (dialogState.isTyping) {
+                skipDialogTyping();
+                const checkSkip = setInterval(() => {
+                    if (!dialogState.isTyping) {
+                        clearInterval(checkSkip);
+                        if (dialogState.currentPage < totalPages - 1) {
+                            showDialogPage(dialogState.currentPage + 1);
+                        }
+                    }
+                }, 50);
+                return;
+            }
+
+            if (dialogState.currentPage < totalPages - 1) {
+                showDialogPage(dialogState.currentPage + 1);
+            } else {
+                document.getElementById('nextBtn').textContent = 'ЗАВЕРШИТЬ';
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('prevBtn').disabled = true;
+                document.getElementById('nextBtn').innerHTML = '✅ ЗАВЕРШЕНО';
+            }
+        }
+
+        function prevDialogPage() {
+            if (dialogState.isTyping) return;
+            if (dialogState.currentPage > 0) {
+                showDialogPage(dialogState.currentPage - 1);
+            }
+        }
+
+        function updateDialogIndicators() {
+            const dots = document.querySelectorAll('.page-dot');
+            dots.forEach((dot, index) => {
+                dot.className = 'page-dot';
+                if (index === dialogState.currentPage) {
+                    dot.classList.add('active');
+                } else if (index < dialogState.currentPage) {
+                    dot.classList.add('done');
+                }
+            });
+        }
+
+        function showFinalDialog() {
+            const content = document.getElementById('screenContent');
+            content.innerHTML = '';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'dialog-screen active';
+            wrapper.innerHTML = `
+                <div class="dialog-container">
+                    <div class="portrait-container">
+                        <div class="portrait-frame">
+                            <img src="1782322979907.png" alt="Юрий Анатольевич">
+                            <div class="scanline-overlay"></div>
+                            <div class="vignette"></div>
+                        </div>
+                        <div class="portrait-name">
+                            <span class="highlight">ЮРИЙ АНАТОЛЬЕВИЧ</span><br>
+                            БЫВШИЙ СОТРУДНИК НИИ ЧАЗ
+                        </div>
+                    </div>
+                    <div class="text-container">
+                        <div class="dialog-text" id="dialogText">
+                            <div class="text-content" id="textContent"></div>
+                            <span class="cursor-blink" id="cursorBlink"></span>
+                        </div>
+                        <div class="page-indicator" id="pageIndicator"></div>
+                        <div class="dialog-controls">
+                            <button class="btn secondary" id="prevBtn" disabled>◀ НАЗАД</button>
+                            <button class="btn" id="nextBtn">ДАЛЕЕ ▶</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            content.appendChild(wrapper);
+
+            document.getElementById('nextBtn').addEventListener('click', nextDialogPage);
+            document.getElementById('prevBtn').addEventListener('click', prevDialogPage);
+
+            document.getElementById('dialogText').addEventListener('click', function() {
+                if (dialogState.isTyping) {
+                    skipDialogTyping();
+                }
+            });
+
+            initDialog();
         }
 
         // ========================================
@@ -1085,9 +1840,10 @@
             state.gameWon = false;
             state.stage = 0;
             state.sudokuSkipped = false;
-            state.mazePlayer = { x: 0, y: 0 };
+            state.sudokuGrid = CONFIG.SUDOKU_PUZZLE.map(row => [...row]);
+            state.simon = { level: 0, sequence: [], playerSequence: [], isComplete: false };
             saveState();
-            showGame('maze');
+            showGame('hunt');
         }
 
         function showGame(gameType) {
@@ -1096,7 +1852,7 @@
 
             const progress = document.createElement('div');
             progress.className = 'progress';
-            const stages = ['Лабиринт', 'СУДОКY', 'Опрос', 'Верификация', 'Финал'];
+            const stages = ['Охота', 'СУДОКY', 'Опрос', 'Верификация', 'Финал'];
             stages.forEach((name, i) => {
                 const step = document.createElement('div');
                 step.className = 'progress-step';
@@ -1114,8 +1870,8 @@
             content.appendChild(attemptsDiv);
 
             switch (gameType) {
-                case 'maze':
-                    showMaze(content);
+                case 'hunt':
+                    showHunt(content);
                     break;
                 case 'sudoku':
                     showSudoku(content);
@@ -1127,216 +1883,320 @@
                     showFinalQuestions(content);
                     break;
                 case 'reward':
-                    showReward();
+                    showFinalDialog();
                     break;
             }
         }
 
         // ========================================
-        // ===== ЛАБИРИНТ (НОВЫЙ МАРШРУТ) =====
+        // ===== ОХОТА =====
         // ========================================
 
-        function showMaze(content) {
+        function showHunt(content) {
             const container = document.createElement('div');
             container.className = 'game-container active';
 
             const title = document.createElement('div');
             title.className = 'game-title';
-            title.textContent = '══ ЛАБИРИНТ ЗОНЫ ══';
+            title.textContent = '══ ОХОТА НА МУТАНТОВ ══';
             container.appendChild(title);
 
-            const desc = document.createElement('div');
-            desc.className = 'message';
-            desc.textContent = 'Пройдите через аномальное поле к выходу. (Зеленый - путь)';
-            container.appendChild(desc);
+            const header = document.createElement('div');
+            header.className = 'game-header';
+            header.innerHTML = `
+                <div class="stat">🎯 Попаданий: <span class="value" id="huntScore">0</span></div>
+                <div class="stat">⏱️ Время: <span class="value" id="huntTimer">${CONFIG.GAME_DURATION}</span>с</div>
+                <div class="stat">🎯 Цель: <span class="value" id="huntTarget">0</span>/${CONFIG.TARGET_KILLS}</div>
+            `;
+            container.appendChild(header);
 
-            const mazeDiv = document.createElement('div');
-            mazeDiv.className = 'maze-container';
-            mazeDiv.style.gridTemplateColumns = `repeat(${CONFIG.MAZE_SIZE}, 1fr)`;
+            const field = document.createElement('div');
+            field.className = 'hunting-field';
+            field.id = 'huntingField';
+            const crosshair = document.createElement('div');
+            crosshair.className = 'crosshair';
+            crosshair.id = 'crosshair';
+            crosshair.textContent = '+';
+            field.appendChild(crosshair);
+            container.appendChild(field);
 
-            const maze = generateMaze(CONFIG.MAZE_SIZE);
+            const msg = document.createElement('div');
+            msg.className = 'message';
+            msg.id = 'huntMessage';
+            msg.textContent = 'Уничтожьте 10 мутантов за 30 секунд!';
+            container.appendChild(msg);
 
-            // Убеждаемся, что игрок в левом верхнем углу
-            if (!state.mazePlayer || state.mazePlayer.x >= CONFIG.MAZE_SIZE || state.mazePlayer.y >= CONFIG.MAZE_SIZE) {
-                state.mazePlayer = { x: 0, y: 0 };
-                saveState();
-            }
-
-            for (let y = 0; y < CONFIG.MAZE_SIZE; y++) {
-                for (let x = 0; x < CONFIG.MAZE_SIZE; x++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'maze-cell';
-                    cell.dataset.x = x;
-                    cell.dataset.y = y;
-
-                    const isWall = maze[y][x] === 1;
-                    const isPlayer = (x === state.mazePlayer.x && y === state.mazePlayer.y);
-                    const isExit = (x === CONFIG.MAZE_SIZE - 1 && y === CONFIG.MAZE_SIZE - 1);
-
-                    if (isWall) {
-                        cell.classList.add('wall');
-                    } else {
-                        cell.classList.add('path');
-                    }
-
-                    if (isPlayer) {
-                        cell.classList.add('player');
-                        cell.textContent = '●';
-                    }
-
-                    if (isExit) {
-                        cell.classList.add('exit');
-                        cell.textContent = '🚪';
-                    }
-
-                    // Клик для перемещения
-                    cell.addEventListener('click', function() {
-                        const cx = parseInt(this.dataset.x);
-                        const cy = parseInt(this.dataset.y);
-                        const dx = cx - state.mazePlayer.x;
-                        const dy = cy - state.mazePlayer.y;
-                        if (Math.abs(dx) + Math.abs(dy) === 1) {
-                            movePlayer(dx, dy, maze);
-                        }
-                    });
-
-                    mazeDiv.appendChild(cell);
-                }
-            }
-
-            container.appendChild(mazeDiv);
-
-            const controls = document.createElement('div');
-            controls.className = 'btn-group';
-
-            const btnUp = createBtn('▲', () => movePlayer(0, -1, maze));
-            const btnDown = createBtn('▼', () => movePlayer(0, 1, maze));
-            const btnLeft = createBtn('◄', () => movePlayer(-1, 0, maze));
-            const btnRight = createBtn('►', () => movePlayer(1, 0, maze));
-
-            controls.appendChild(btnUp);
-            controls.appendChild(btnLeft);
-            controls.appendChild(btnRight);
-            controls.appendChild(btnDown);
-
-            container.appendChild(controls);
-
-            const keyHandler = (e) => {
-                switch (e.key) {
-                    case 'ArrowUp': e.preventDefault();
-                        movePlayer(0, -1, maze); break;
-                    case 'ArrowDown': e.preventDefault();
-                        movePlayer(0, 1, maze); break;
-                    case 'ArrowLeft': e.preventDefault();
-                        movePlayer(-1, 0, maze); break;
-                    case 'ArrowRight': e.preventDefault();
-                        movePlayer(1, 0, maze); break;
-                }
-            };
-            document.addEventListener('keydown', keyHandler);
-            container._keyHandler = keyHandler;
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'btn-group';
+            const resetBtn = createBtn('🔄 Начать заново', () => {
+                if (state.hunt.spawnInterval) clearInterval(state.hunt.spawnInterval);
+                if (state.hunt.timerInterval) clearInterval(state.hunt.timerInterval);
+                startHunt();
+            });
+            btnGroup.appendChild(resetBtn);
+            container.appendChild(btnGroup);
 
             content.appendChild(container);
+            startHunt();
         }
 
-        function generateMaze(size) {
-            // Создаем новый лабиринт 7x7 с другим маршрутом
-            const maze = Array(size).fill(null).map(() => Array(size).fill(1));
-            
-            // Внешние стены с проходами
-            for (let i = 0; i < size; i++) {
-                maze[0][i] = 0;
-                maze[size-1][i] = 0;
-                maze[i][0] = 0;
-                maze[i][size-1] = 0;
-            }
-            
-            // Внутренние стены - новый узор
-            for (let y = 1; y < size-1; y++) {
-                for (let x = 1; x < size-1; x++) {
-                    // Создаем лабиринт с зигзагами
-                    if ((y % 2 === 1 && x % 2 === 1) || 
-                        (y % 2 === 0 && x % 2 === 0 && y > 1 && x > 1 && x < size-2 && y < size-2)) {
-                        maze[y][x] = 1;
+        function startHunt() {
+            const hunt = state.hunt;
+            hunt.score = 0;
+            hunt.timeLeft = CONFIG.GAME_DURATION;
+            hunt.isPlaying = true;
+            hunt.isGameOver = false;
+            hunt.isWin = false;
+            hunt.mutants = [];
+
+            sound.resume();
+
+            document.getElementById('huntScore').textContent = '0';
+            document.getElementById('huntTimer').textContent = CONFIG.GAME_DURATION;
+            document.getElementById('huntTimer').className = 'value';
+            document.getElementById('huntTarget').textContent = `0/${CONFIG.TARGET_KILLS}`;
+            const msg = document.getElementById('huntMessage');
+            msg.textContent = 'Уничтожьте 10 мутантов за 30 секунд!';
+            msg.className = 'message';
+
+            const field = document.getElementById('huntingField');
+            field.querySelectorAll('.mutant').forEach(el => el.remove());
+
+            if (hunt.timerInterval) clearInterval(hunt.timerInterval);
+            if (hunt.spawnInterval) clearInterval(hunt.spawnInterval);
+
+            hunt.timerInterval = setInterval(() => {
+                hunt.timeLeft--;
+                document.getElementById('huntTimer').textContent = hunt.timeLeft;
+                const timerEl = document.getElementById('huntTimer');
+                if (hunt.timeLeft <= 5) {
+                    timerEl.className = 'value danger';
+                } else {
+                    timerEl.className = 'value';
+                }
+                if (hunt.timeLeft <= 0) {
+                    endHunt(false);
+                }
+            }, 1000);
+
+            hunt.spawnInterval = setInterval(() => {
+                if (hunt.isPlaying && !hunt.isGameOver) {
+                    spawnMutant();
+                }
+            }, CONFIG.MUTANT_SPAWN_INTERVAL);
+
+            setTimeout(() => spawnMutant(), 200);
+            setTimeout(() => spawnMutant(), 500);
+            setTimeout(() => spawnMutant(), 900);
+
+            setupHuntEvents();
+        }
+
+        function setupHuntEvents() {
+            const field = document.getElementById('huntingField');
+            const crosshair = document.getElementById('crosshair');
+
+            const newField = field.cloneNode(true);
+            field.parentNode.replaceChild(newField, field);
+
+            const newCrosshair = newField.querySelector('#crosshair');
+
+            newField.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                newCrosshair.style.left = (e.clientX - rect.left) + 'px';
+                newCrosshair.style.top = (e.clientY - rect.top) + 'px';
+                newCrosshair.style.display = 'block';
+            });
+
+            newField.addEventListener('mouseleave', function() {
+                newCrosshair.style.display = 'none';
+            });
+
+            newField.addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('crosshair')) {
+                    if (state.hunt.isPlaying && !state.hunt.isGameOver) {
+                        sound.playMiss();
+                        const shot = document.createElement('div');
+                        shot.className = 'shot-effect';
+                        shot.textContent = '·';
+                        shot.style.color = '#00ff41';
+                        shot.style.fontSize = '20px';
+                        shot.style.opacity = '0.3';
+                        shot.style.left = (e.clientX - this.getBoundingClientRect().left) + 'px';
+                        shot.style.top = (e.clientY - this.getBoundingClientRect().top) + 'px';
+                        this.appendChild(shot);
+                        setTimeout(() => shot.remove(), 200);
                     }
                 }
-            }
-            
-            // Делаем проходы - новый маршрут
-            for (let i = 1; i < size-1; i++) {
-                // Диагональные проходы
-                if (i % 2 === 0) {
-                    maze[i][i] = 0;
-                    maze[i][size-1-i] = 0;
+            });
+
+            newField.addEventListener('click', function(e) {
+                const mutant = e.target.closest('.mutant');
+                if (mutant && !mutant.classList.contains('hit')) {
+                    sound.playShoot();
                 }
-                // Горизонтальные и вертикальные проходы
-                if (i % 3 === 0) {
-                    maze[1][i] = 0;
-                    maze[i][1] = 0;
-                    maze[size-2][i] = 0;
-                    maze[i][size-2] = 0;
-                }
-                // Дополнительные проходы
-                if (i > 1 && i < size-2) {
-                    maze[i][i-1] = 0;
-                    maze[i-1][i] = 0;
-                }
-            }
-            
-            // Делаем проходы для обхода стен
-            maze[1][2] = 0;
-            maze[2][1] = 0;
-            maze[3][4] = 0;
-            maze[4][3] = 0;
-            maze[4][5] = 0;
-            maze[5][4] = 0;
-            
-            // Убеждаемся, что вход и выход открыты
-            maze[1][0] = 0;
-            maze[size-2][size-1] = 0;
-            
-            // Делаем центральный проход
-            const center = Math.floor(size/2);
-            for (let i = 1; i < size-1; i++) {
-                maze[center][i] = 0;
-                maze[i][center] = 0;
-            }
-            
-            return maze;
+            });
         }
 
-        function movePlayer(dx, dy, maze) {
-            if (state.gameOver || state.gameWon) return;
+        function spawnMutant() {
+            const hunt = state.hunt;
+            if (hunt.isGameOver || !hunt.isPlaying) return;
 
-            const newX = state.mazePlayer.x + dx;
-            const newY = state.mazePlayer.y + dy;
+            const field = document.getElementById('huntingField');
+            const currentMutants = field.querySelectorAll('.mutant');
 
-            if (newX < 0 || newX >= CONFIG.MAZE_SIZE || newY < 0 || newY >= CONFIG.MAZE_SIZE) return;
-            if (maze[newY][newX] === 1) {
+            if (currentMutants.length >= CONFIG.MAX_MUTANTS) return;
+
+            const mutantData = CONFIG.MUTANTS[Math.floor(Math.random() * CONFIG.MUTANTS.length)];
+            const size = Math.random() * 20 + 36;
+
+            const mutant = document.createElement('div');
+            mutant.className = 'mutant';
+            mutant.textContent = mutantData.emoji;
+            mutant.style.fontSize = size + 'px';
+            mutant.style.left = (Math.random() * 85 + 5) + '%';
+            mutant.style.top = (Math.random() * 80 + 5) + '%';
+            mutant.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+            mutant.dataset.name = mutantData.name;
+
+            const label = document.createElement('span');
+            label.className = 'mutant-label';
+            label.textContent = mutantData.name;
+            mutant.appendChild(label);
+
+            mutant.addEventListener('click', function(e) {
+                if (state.hunt.isGameOver || !state.hunt.isPlaying) return;
+                e.stopPropagation();
+                shootMutant(this);
+            });
+
+            const speedX = (Math.random() - 0.5) * 0.5;
+            const speedY = (Math.random() - 0.5) * 0.5;
+
+            let x = parseFloat(mutant.style.left);
+            let y = parseFloat(mutant.style.top);
+
+            const moveInterval = setInterval(() => {
+                if (state.hunt.isGameOver || !state.hunt.isPlaying || !mutant.parentNode) {
+                    clearInterval(moveInterval);
+                    return;
+                }
+
+                x += speedX * 0.3;
+                y += speedY * 0.3;
+
+                if (x < 2 || x > 90) {
+                    x = Math.max(2, Math.min(90, x));
+                }
+                if (y < 2 || y > 90) {
+                    y = Math.max(2, Math.min(90, y));
+                }
+
+                mutant.style.left = x + '%';
+                mutant.style.top = y + '%';
+            }, 100);
+
+            mutant._moveInterval = moveInterval;
+
+            field.appendChild(mutant);
+            hunt.mutants.push(mutant);
+
+            setTimeout(() => {
+                if (mutant.parentNode && !mutant.classList.contains('hit')) {
+                    mutant.style.opacity = '0.3';
+                    setTimeout(() => {
+                        if (mutant.parentNode) {
+                            if (mutant._moveInterval) clearInterval(mutant._moveInterval);
+                            mutant.remove();
+                        }
+                    }, 500);
+                }
+            }, 5000);
+        }
+
+        function shootMutant(mutant) {
+            const hunt = state.hunt;
+            if (hunt.isGameOver || !hunt.isPlaying) return;
+            if (mutant.classList.contains('hit')) return;
+
+            sound.playHit();
+
+            mutant.classList.add('hit');
+
+            if (mutant._moveInterval) {
+                clearInterval(mutant._moveInterval);
+            }
+
+            const field = document.getElementById('huntingField');
+            const rect = mutant.getBoundingClientRect();
+            const fieldRect = field.getBoundingClientRect();
+
+            const shot = document.createElement('div');
+            shot.className = 'shot-effect';
+            shot.textContent = '💥';
+            shot.style.left = (rect.left - fieldRect.left + rect.width / 2) + 'px';
+            shot.style.top = (rect.top - fieldRect.top + rect.height / 2) + 'px';
+            field.appendChild(shot);
+
+            setTimeout(() => {
+                shot.classList.add('active');
+                setTimeout(() => shot.remove(), 300);
+            }, 10);
+
+            hunt.score++;
+            document.getElementById('huntScore').textContent = hunt.score;
+
+            if (hunt.score >= CONFIG.TARGET_KILLS) {
+                endHunt(true);
+                return;
+            }
+
+            document.getElementById('huntTarget').textContent = `${hunt.score}/${CONFIG.TARGET_KILLS}`;
+
+            setTimeout(() => {
+                if (mutant.parentNode) {
+                    mutant.remove();
+                }
+            }, 300);
+        }
+
+        function endHunt(win) {
+            const hunt = state.hunt;
+            if (hunt.isGameOver) return;
+            hunt.isGameOver = true;
+            hunt.isPlaying = false;
+            hunt.isWin = win;
+
+            if (hunt.spawnInterval) clearInterval(hunt.spawnInterval);
+            if (hunt.timerInterval) clearInterval(hunt.timerInterval);
+
+            const field = document.getElementById('huntingField');
+            field.querySelectorAll('.mutant').forEach(m => {
+                if (m._moveInterval) clearInterval(m._moveInterval);
+                m.remove();
+            });
+
+            sound.playGameOver(win);
+
+            const msg = document.getElementById('huntMessage');
+
+            if (win || hunt.score >= CONFIG.TARGET_KILLS) {
+                msg.textContent = '🎉 ПОБЕДА! Все мутанты уничтожены!';
+                msg.className = 'message success';
+                state.stage = 1;
+                saveState();
+                setTimeout(() => showGame('sudoku'), 1500);
+            } else {
+                msg.textContent = `❌ Время вышло! Уничтожено: ${hunt.score}/${CONFIG.TARGET_KILLS}`;
+                msg.className = 'message error';
                 state.attempts++;
                 saveState();
                 if (state.attempts >= CONFIG.MAX_ATTEMPTS) {
-                    showScreamer();
-                    return;
+                    setTimeout(() => showScreamer(), 1000);
+                } else {
+                    setTimeout(() => showGame('hunt'), 1500);
                 }
-                showMessage('Аномалия! Вы наткнулись на стену.', 'error');
-                updateAttempts();
-                return;
             }
-
-            state.mazePlayer.x = newX;
-            state.mazePlayer.y = newY;
-            saveState();
-
-            if (newX === CONFIG.MAZE_SIZE - 1 && newY === CONFIG.MAZE_SIZE - 1) {
-                state.stage = 1;
-                saveState();
-                showMessage('✅ Вы прошли лабиринт!', 'success');
-                setTimeout(() => showGame('sudoku'), 1000);
-                return;
-            }
-
-            showGame('maze');
         }
 
         // ========================================
@@ -1361,7 +2221,6 @@
             const wrapper = document.createElement('div');
             wrapper.className = 'sudoku-wrapper';
 
-            // Секция судоку
             const sudokuSection = document.createElement('div');
             sudokuSection.className = 'sudoku-section';
 
@@ -1408,7 +2267,6 @@
             sudokuSection.appendChild(gridDiv);
             wrapper.appendChild(sudokuSection);
 
-            // ===== СЕКЦИЯ ПЯТНАШЕК =====
             const puzzleSection = document.createElement('div');
             puzzleSection.className = 'puzzle-section';
 
@@ -1463,33 +2321,19 @@
             initSimonGame(cells, passwordInput);
         }
 
-        // ========================================
-        // ===== ИГРА ПЯТНАШКИ =====
-        // ========================================
-
-        let simonState = {
-            cells: [],
-            passwordInput: null,
-            isPlaying: false,
-            isShowing: false,
-            sequence: [],
-            playerSequence: [],
-            currentLevel: 0,
-            maxLevels: 5,
-            isWaitingForInput: false,
-            isComplete: false
-        };
-
         function initSimonGame(cells, passwordInput) {
-            simonState.cells = cells;
-            simonState.passwordInput = passwordInput;
-            simonState.isPlaying = false;
-            simonState.isShowing = false;
-            simonState.sequence = [];
-            simonState.playerSequence = [];
-            simonState.currentLevel = 0;
-            simonState.isWaitingForInput = false;
-            simonState.isComplete = state.simon.isComplete || false;
+            simonState = {
+                cells: cells,
+                passwordInput: passwordInput,
+                isPlaying: false,
+                isShowing: false,
+                sequence: [],
+                playerSequence: [],
+                currentLevel: 0,
+                maxLevels: 5,
+                isWaitingForInput: false,
+                isComplete: state.simon.isComplete || false
+            };
 
             if (state.simon.isComplete) {
                 simonState.isComplete = true;
@@ -1510,10 +2354,10 @@
                 if (state.simon.sequence && state.simon.sequence.length > 0) {
                     simonState.sequence = state.simon.sequence;
                     if (state.simon.playerSequence && state.simon.playerSequence.length === simonState.sequence.length) {
-                        setTimeout(() => nextLevel(), 500);
+                        setTimeout(() => simonNextLevel(), 500);
                     } else {
                         cells[2].textContent = '▶';
-                        setTimeout(() => showSequence(), 500);
+                        setTimeout(() => simonShowSequence(), 500);
                     }
                 }
             } else {
@@ -1527,14 +2371,14 @@
             cells[2].addEventListener('click', function() {
                 if (simonState.isComplete) return;
                 if (simonState.isPlaying || simonState.isShowing) return;
-                
+
                 if (simonState.currentLevel === 0) {
-                    startGame();
+                    simonStartGame();
                 } else if (simonState.sequence.length > 0 && !simonState.isWaitingForInput) {
                     this.textContent = '▶';
-                    setTimeout(() => showSequence(), 300);
+                    setTimeout(() => simonShowSequence(), 300);
                 } else {
-                    startGame();
+                    simonStartGame();
                 }
             });
 
@@ -1542,7 +2386,7 @@
                 if (index === 2) return;
                 cell.addEventListener('click', function() {
                     if (!simonState.isWaitingForInput || simonState.isShowing || simonState.isComplete) return;
-                    handleSimonClick(index);
+                    simonHandleClick(index);
                 });
             });
 
@@ -1581,29 +2425,29 @@
             });
         }
 
-        function startGame() {
+        function simonStartGame() {
             if (simonState.isComplete) return;
             simonState.isPlaying = true;
             simonState.currentLevel = 0;
             simonState.sequence = [];
             simonState.playerSequence = [];
-            
+
             state.simon.level = 0;
             state.simon.sequence = [];
             state.simon.playerSequence = [];
             saveState();
-            
+
             simonState.cells.forEach((c, i) => {
                 if (i !== 2) c.classList.remove('disabled');
                 c.classList.remove('active', 'wrong');
             });
             simonState.cells[2].textContent = '▶';
             simonState.cells[2].classList.remove('disabled');
-            
-            nextLevel();
+
+            simonNextLevel();
         }
 
-        function nextLevel() {
+        function simonNextLevel() {
             if (simonState.currentLevel >= simonState.maxLevels) {
                 simonState.isComplete = true;
                 state.simon.isComplete = true;
@@ -1630,7 +2474,7 @@
                 } while (idx === 2);
                 simonState.sequence.push(idx);
             }
-            
+
             state.simon.sequence = simonState.sequence;
             state.simon.playerSequence = [];
             saveState();
@@ -1638,14 +2482,14 @@
             simonState.playerSequence = [];
             simonState.isWaitingForInput = false;
             simonState.cells[2].textContent = '▶';
-            setTimeout(() => showSequence(), 500);
+            setTimeout(() => simonShowSequence(), 500);
         }
 
-        function showSequence() {
+        function simonShowSequence() {
             simonState.isShowing = true;
             simonState.isWaitingForInput = false;
             simonState.cells[2].textContent = '⏳';
-            
+
             let i = 0;
             const interval = setInterval(() => {
                 if (i >= simonState.sequence.length) {
@@ -1667,7 +2511,7 @@
             }, 600);
         }
 
-        function handleSimonClick(index) {
+        function simonHandleClick(index) {
             if (!simonState.isWaitingForInput || simonState.isShowing) return;
             if (index === 2) return;
 
@@ -1690,13 +2534,13 @@
 
                     setTimeout(() => {
                         simonState.cells[2].textContent = '▶';
-                        nextLevel();
+                        simonNextLevel();
                     }, 800);
                 }
             } else {
                 cell.classList.add('wrong');
                 setTimeout(() => cell.classList.remove('wrong'), 500);
-                
+
                 state.attempts++;
                 saveState();
                 if (state.attempts >= CONFIG.MAX_ATTEMPTS) {
@@ -1712,16 +2556,14 @@
 
                 setTimeout(() => {
                     simonState.cells[2].textContent = '▶';
-                    setTimeout(() => showSequence(), 500);
+                    setTimeout(() => simonShowSequence(), 500);
                 }, 1000);
             }
         }
 
-        // ===== ПРОВЕРКА СУДОКУ =====
-
         function checkSudoku() {
             if (state.gameOver || state.gameWon) return;
-            
+
             if (state.sudokuSkipped) {
                 state.stage = 2;
                 saveState();
@@ -1775,17 +2617,17 @@
             if (!q) {
                 state.stage = 3;
                 saveState();
-                
+
                 const msg = document.createElement('div');
                 msg.className = 'message success';
                 msg.textContent = 'Мне требовалось время, чтобы подгрузить основные данные, поэтому я увлекал тебя рядом глупых вопросов, на которые можно было отвечать как угодно.';
                 container.appendChild(msg);
-                
+
                 const nextBtn = createBtn('Продолжить →', () => {
                     showGame('final');
                 });
                 container.appendChild(nextBtn);
-                
+
                 content.appendChild(container);
                 return;
             }
@@ -1828,7 +2670,7 @@
         }
 
         // ========================================
-        // ===== ТРИ ФИНАЛЬНЫХ ВОПРОСА =====
+        // ===== ФИНАЛЬНЫЕ ВОПРОСЫ =====
         // ========================================
 
         function showFinalQuestions(content) {
@@ -1852,7 +2694,7 @@
                 const block = document.createElement('div');
                 block.className = 'question-block';
                 block.id = `qblock_${index}`;
-                
+
                 if (!state.finalUnlocked[index]) {
                     block.classList.add('locked');
                 }
@@ -1867,7 +2709,7 @@
                 input.id = `qinput_${index}`;
                 input.placeholder = q.placeholder;
                 input.disabled = !state.finalUnlocked[index];
-                
+
                 if (state.finalAnswers[index]) {
                     input.value = state.finalAnswers[index];
                 }
@@ -1908,13 +2750,13 @@
             const checkBtn = createBtn('Проверить все', () => {
                 let allCorrect = true;
                 let firstError = -1;
-                
+
                 CONFIG.FINAL_QUESTIONS.forEach((q, index) => {
                     const input = document.getElementById(`qinput_${index}`);
                     const status = document.getElementById(`qstatus_${index}`);
                     const answer = input.value.trim();
                     state.finalAnswers[index] = answer;
-                    
+
                     if (answer.toUpperCase() === q.answer.toUpperCase()) {
                         status.textContent = '✅ Правильно!';
                         status.classList.add('done');
@@ -1941,7 +2783,7 @@
                     state.gameWon = true;
                     saveState();
                     showMessage('✅ Ты справился, коллега.', 'success');
-                    setTimeout(() => showReward(), 1500);
+                    setTimeout(() => showGame('reward'), 1500);
                 } else {
                     state.attempts++;
                     saveState();
@@ -1951,7 +2793,7 @@
                     }
                     showMessage(`❌ Есть ошибки! Осталось попыток: ${CONFIG.MAX_ATTEMPTS - state.attempts}`, 'error');
                     updateAttempts();
-                    
+
                     if (firstError !== -1) {
                         const input = document.getElementById(`qinput_${firstError}`);
                         if (input) input.focus();
@@ -1987,7 +2829,7 @@
             if (answer.toUpperCase() === q.answer.toUpperCase()) {
                 status.textContent = '✅ Правильно!';
                 status.classList.add('done');
-                
+
                 if (index < CONFIG.FINAL_QUESTIONS.length - 1) {
                     state.finalUnlocked[index + 1] = true;
                     const nextInput = document.getElementById(`qinput_${index + 1}`);
@@ -2015,186 +2857,30 @@
         }
 
         // ========================================
-        // ===== СКРИМЕР =====
-        // ========================================
-
-        function showScreamer() {
-            state.gameOver = true;
-            state.currentScreen = 'gameover';
-            saveState();
-            
-            const overlay = document.getElementById('screamerOverlay');
-            
-            const rainContainer = document.getElementById('codeRain');
-            rainContainer.innerHTML = '';
-            
-            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?';
-            for (let i = 0; i < 50; i++) {
-                const span = document.createElement('span');
-                span.textContent = chars[Math.floor(Math.random() * chars.length)];
-                span.style.left = Math.random() * 100 + '%';
-                span.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                span.style.animationDelay = (Math.random() * 2) + 's';
-                span.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                span.style.opacity = Math.random() * 0.5 + 0.1;
-                rainContainer.appendChild(span);
-            }
-            
-            overlay.classList.add('active');
-            
-            playWarningSound();
-            
-            setTimeout(() => {
-                overlay.classList.remove('active');
-                showGameOver();
-            }, 4000);
-        }
-
-        function playWarningSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.5);
-                
-                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
-                
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 1);
-                
-                setTimeout(() => {
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.type = 'square';
-                    osc2.frequency.setValueAtTime(200, audioCtx.currentTime);
-                    osc2.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
-                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                    osc2.start(audioCtx.currentTime);
-                    osc2.stop(audioCtx.currentTime + 0.5);
-                }, 100);
-            } catch (e) {
-                console.log('Звук не поддерживается');
-            }
-        }
-
-        // ========================================
-        // ===== GAME OVER =====
-        // ========================================
-
-        function showGameOver() {
-            const content = document.getElementById('screenContent');
-            content.innerHTML = '';
-
-            const title = document.createElement('div');
-            title.className = 'game-title';
-            title.textContent = '══ ДОСТУП ЗАБЛОКИРОВАН ══';
-            title.style.color = '#ff6600';
-            title.style.borderColor = '#ff6600';
-            content.appendChild(title);
-
-            const msg = document.createElement('div');
-            msg.className = 'message gameover';
-            msg.textContent = '❌ Попытка взлома была пресечена. Ваше местоположение передано центру.';
-            content.appendChild(msg);
-
-            const restartBtn = createBtn('🔄 Попробовать снова', () => {
-                localStorage.removeItem('stalkerQuestState');
-                location.reload();
-            });
-            content.appendChild(restartBtn);
-        }
-
-        // ========================================
-        // ===== ФИНАЛ =====
-        // ========================================
-
-        function showReward() {
-            const content = document.getElementById('screenContent');
-            content.innerHTML = '';
-
-            const msg = document.createElement('div');
-            msg.className = 'message success';
-            msg.textContent = 'Ты справился, коллега.';
-            msg.style.fontSize = '22px';
-            msg.style.fontWeight = 'bold';
-            content.appendChild(msg);
-
-            const rewardDiv = document.createElement('div');
-            rewardDiv.className = 'reward show';
-
-            CONFIG.REWARD_IMAGES.forEach(src => {
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = 'Награда';
-                img.style.width = '100%';
-                img.style.marginBottom = '20px';
-                img.style.border = '1px solid #00ff41';
-                rewardDiv.appendChild(img);
-            });
-
-            const textDiv = document.createElement('div');
-            textDiv.className = 'reward-text';
-            textDiv.textContent = CONFIG.REWARD_TEXT;
-            rewardDiv.appendChild(textDiv);
-
-            content.appendChild(rewardDiv);
-
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'btn-group';
-            const restartBtn = createBtn('🔄 Начать сначала', () => {
-                localStorage.removeItem('stalkerQuestState');
-                location.reload();
-            });
-            btnGroup.appendChild(restartBtn);
-            content.appendChild(btnGroup);
-        }
-
-        // ========================================
-        // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
-        // ========================================
-
-        function createBtn(text, onClick) {
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.textContent = text;
-            btn.addEventListener('click', onClick);
-            return btn;
-        }
-
-        function showMessage(text, type) {
-            const content = document.getElementById('screenContent');
-            let msgDiv = content.querySelector('.message:not(.game-title)');
-            if (!msgDiv) {
-                msgDiv = document.createElement('div');
-                msgDiv.className = 'message';
-                content.appendChild(msgDiv);
-            }
-            msgDiv.textContent = text;
-            msgDiv.className = 'message ' + type;
-        }
-
-        function updateAttempts() {
-            const attemptsDiv = document.querySelector('.attempt-counter');
-            if (attemptsDiv) {
-                attemptsDiv.innerHTML = `Попыток: <span>${state.attempts}</span> из ${CONFIG.MAX_ATTEMPTS}`;
-            }
-        }
-
-        // ========================================
         // ===== ЗАПУСК =====
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', function() {
+            const saved = localStorage.getItem('stalkerQuestState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                    if (state.gameWon) {
+                        showFinalDialog();
+                        return;
+                    }
+                    if (state.gameOver) {
+                        showGameOver();
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            state.sudokuGrid = CONFIG.SUDOKU_PUZZLE.map(row => [...row]);
+            state.simon = { level: 0, sequence: [], playerSequence: [], isComplete: false };
+            bootSequence();
+        });
     </script>
 </body>
 </html>
